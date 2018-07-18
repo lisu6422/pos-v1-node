@@ -34,15 +34,14 @@ module.exports = function printInventory(inputs) {
         let x = inputsArr[i];
         for (let j = 0; j < allItems.length; j++) {
             obj = allItems[j];
-            if (obj.barcode == x) {
+            if (obj.barcode === x) {
                 let temp = 0;
                 if (count[x] >= 3 && promotions.includes(x)) {
                     let freeCount = Math.floor(count[x] / 3);
                     freeSum += freeCount * obj.price;
                     temp = (count[x] - freeCount) * obj.price;
                     promotionText += '名称：' + obj.name + '，数量：' + freeCount + obj.unit + '\n';
-                }
-                else {
+                } else {
                     temp = count[x] * obj.price;
                 }
                 sum += temp;
