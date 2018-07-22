@@ -5,46 +5,30 @@ module.exports = class Calculate{
         this.promotionsItems = datebase.loadPromotions();
     }
 
-    getInventory(orders){
-        let outstr = "***<没钱赚商店>购物清单***\n";
-        outstr += this.getOrderInfos(orders).join('\n') + "\n";
-        outstr += "----------------------\n";
-        outstr += "挥泪赠送商品：\n";
-        outstr += this.getPromotionInfos(orders).join('\n') + "\n";
-        outstr += "----------------------\n";
-        outstr += `总计：${this.getTotalPrice(orders).toFixed(2)}(元)\n`;
-        outstr += `节省：${this.getTotalFreePrice(orders).toFixed(2)}(元)\n`;
-        outstr += "**********************";
-        return outstr;
+    getOrderInfo(orders){
+        let orderItems = [];
+        for(let i=0; i<orders.length; i++){
+            let orderItem = {};
+            let targetItem = this.allItems.find(item => item.barcode === orders[i].barcode);
+            orderItem.barcode = targetItem.barcode;
+            orderItem.count = orders[i].count;
+            orderItem.name = targetItem.name;
+            orderItem.unit = targetItem.unit;
+            orderItem.price = targetItem.price;
+            orderItem.freecount = 0;
+            orderItems.push(orderItem);
+        }
+       
+        return orderItems;
     }
 
-    getOrderOutstr(orderItems){
-        let outstr = orderItems.map(order => {
-            let product = this.allItems.find(product => product.barcode === order.barcode);
-            let totalPrice = product.price * (order.count - this.getFreeCount(order));
-            return `名称：${product.name}，数量：${order.count}${product.unit}，单价：${product.price.toFixed(2)}(元)，小计：${totalPrice.toFixed(2)}(元)`;
-        });
-        return outstr;
+    calculateFreeCount(orderItems){
+        for(let i=0; i<orderItems.length; i++){
+            if(this.promotionsItems[0].barcodes.includes(orderItems[i].barcode)){
+                orderItems[i].freecount = parseInt(orderItems[i].count / 3);
+            }
+        }
+        return orderItems;
     }
-
-    getPromotionInfos(orders){
-
-    }
-
-    getTotalPrice(orders){
-
-    }
-
-    getTotalFreePrice(orders){
-
-    }
-
-    getFreeCount(order) {
-        return this.isBuyTwoAndOneFree(order.barcode) ? parseInt(order.count / 3) : 0;
-    }
-
-    isBuyTwoAndOneFree(barcode) {
-        return this.promotions.find(prom => prom.type === "BUY_TWO_GET_ONE_FREE").barcodes.includes(barcode);
-    }
-
+    
 }

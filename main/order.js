@@ -17,7 +17,6 @@ module.exports = class Order{
             }
         });
 
-        //this.promotions = datebase.loadPromotions();
 
         return orderItems;
     }
